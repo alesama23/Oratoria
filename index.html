@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OratoriaPro Master v4</title>
+    <title>OratoriaPro Academy</title>
     <style>
         :root { --bg: #0b0b0f; --surface: #16161f; --primary: #00e676; --accent: #29b6f6; --text: #ffffff; --text-muted: #8d8d99; }
         body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; padding-bottom: 60px; }
@@ -11,89 +11,206 @@
         h1 { color: var(--primary); text-align: center; margin-bottom: 5px; font-size: 1.8rem; }
         .subtitle { text-align: center; color: var(--text-muted); margin-top: 0; margin-bottom: 25px; font-size: 0.95rem; }
         
-        /* Sistema de Módulos (Acordeón) */
-        .module { background: var(--surface); border-radius: 12px; margin-bottom: 12px; overflow: hidden; border: 1px solid #2a2a35; }
-        .module-header { padding: 15px 20px; background: #1e1e28; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1rem; }
-        .module-header:hover { background: #252533; }
-        .module-content { padding: 0; display: none; }
+        /* Paneles */
+        .card { background: var(--surface); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid #2a2a35; }
+        input { width: 100%; padding: 12px; border-radius: 8px; background: #000; color: white; border: 1px solid #444; margin-bottom: 15px; box-sizing: border-box; }
+        
+        /* Acordeón */
+        .module { background: #16161f; border-radius: 12px; margin-bottom: 10px; border: 1px solid #2a2a35; }
+        .module-header { padding: 15px; background: #1e1e28; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; border-radius: 12px; }
+        .module-content { display: none; }
         .module.active .module-content { display: block; }
-        .module.active .module-header { border-bottom: 1px solid #2a2a35; color: var(--primary); }
+        .module.active .module-header { border-bottom-left-radius: 0; border-bottom-right-radius: 0; color: var(--primary); }
         
-        /* Lista de ejercicios */
-        .exercise-list { list-style: none; padding: 0; margin: 0; }
-        .exercise-list li { padding: 15px 20px; background: #16161f; border-bottom: 1px solid #22222c; cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
-        .exercise-list li:last-child { border-bottom: none; }
-        .exercise-list li:hover { background: #1e1e28; }
-        .exercise-list li.selected { border-left: 4px solid var(--primary); background: #10251a; }
+        ul.exercises { list-style: none; padding: 0; margin: 0; }
+        ul.exercises li { padding: 15px; border-top: 1px solid #222; cursor: pointer; font-size: 0.95rem; }
+        ul.exercises li.selected { border-left: 4px solid var(--primary); background: #10251a; }
         
-        /* Zona de Práctica */
-        .practice-zone { background: #000000; padding: 20px; border-radius: 16px; margin-top: 25px; border: 1px solid #333; display: none; }
+        /* Práctica */
+        .practice-zone { background: #000; padding: 20px; border-radius: 16px; margin-top: 20px; border: 1px solid #333; display: none; }
+        .theory-box { background: #101a24; border-left: 4px solid var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; color: #ced4da; line-height: 1.5; }
+        .script-box { background: #16161f; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        #script-text { font-size: 1.25rem; line-height: 1.6; font-weight: 300; }
         
-        /* Caja de Teoría y Estrategia */
-        .theory-box { background: #101a24; border-left: 4px solid var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; line-height: 1.5; color: #ced4da; }
-        .theory-box b { color: var(--accent); }
-
-        /* Guion o Premisa */
-        .script-box { background: #16161f; padding: 20px; border-radius: 10px; border: 1px solid #2a2a35; margin-bottom: 20px; }
-        .script-type { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); margin-bottom: 8px; font-weight: bold; }
-        #script-text { font-size: 1.25rem; line-height: 1.6; color: #fff; font-weight: 300; }
-        
-        button { background: var(--primary); color: #000; border: none; padding: 16px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; width: 100%; cursor: pointer; transition: 0.2s; }
+        button { background: var(--primary); color: #000; border: none; padding: 15px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; width: 100%; cursor: pointer; }
         button.recording { background: #ff3366; color: white; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
         
-        .ia-feedback { margin-top: 25px; padding: 20px; background: #0b2e1f; border: 1px solid var(--primary); border-radius: 12px; display: none; }
-        .loader { display: none; text-align: center; margin-top: 15px; color: var(--primary); font-style: italic; font-size: 0.95rem; }
+        .ia-feedback { margin-top: 20px; padding: 15px; background: #0b2e1f; border-radius: 10px; display: none; }
+        .loader { display: none; text-align: center; margin-top: 15px; color: var(--primary); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🎙️ OratoriaPro Academy</h1>
-    <p class="subtitle">Entrenador Vocal de Alta Competencia para Radio y Público</p>
+    <h1>🎙️ OratoriaPro</h1>
+    <p class="subtitle">Academia de Locución y Oratoria</p>
 
-    <div id="modules-container"></div>
+    <div id="error-log" style="color: #ff5555; font-size: 0.8rem; font-family: monospace;"></div>
+
+    <div class="card" id="setup-card" style="display: none;">
+        <h3 style="margin-top:0; color: var(--primary);">⚙️ Motor de Inteligencia Artificial</h3>
+        <p style="font-size: 0.85rem; color: #aaa;">Ingresa tu API Key de Gemini para activar el análisis vocal. Se guardará de forma segura en este dispositivo.</p>
+        <input type="password" id="api-key" placeholder="Pega tu API Key aquí...">
+        <button id="save-key-btn">Guardar y Activar Academia</button>
+    </div>
+
+    <div id="modules-container" style="display: none;"></div>
 
     <div class="practice-zone" id="practice-zone">
-        <h3 id="exercise-title" style="color: var(--primary); margin-top: 0; font-size: 1.3rem;"></h3>
-        
-        <div class="theory-box" id="theory-box"></div>
-        
+        <h3 id="ex-title" style="color: var(--primary); margin-top: 0;"></h3>
+        <div class="theory-box" id="ex-theory"></div>
         <div class="script-box">
-            <div class="script-type" id="script-type">Lectura</div>
+            <div id="ex-type" style="font-size: 0.75rem; color: var(--primary); margin-bottom: 8px; font-weight: bold;"></div>
             <div id="script-text"></div>
         </div>
-
-        <button id="record-btn">🎤 Iniciar Grabación</button>
-        <p id="instruction-sub" style="font-size: 0.8rem; text-align: center; color: var(--text-muted); margin-top: 10px;"></p>
-        
-        <div class="loader" id="loader">🔄 El Profesor IA está procesando tu entrega vocal...</div>
-        
+        <button id="record-btn">🎤 Iniciar Práctica</button>
+        <div class="loader" id="loader">Procesando audio con IA...</div>
         <div class="ia-feedback" id="feedback-area">
-            <h4 style="margin-top: 0; color: var(--primary); font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">🧠 Evaluación del Profesor:</h4>
-            <p id="ia-response" style="line-height: 1.6; font-size: 1rem; margin-bottom: 15px; color: #f0f0f0;"></p>
-            <hr style="border-color: #144d34; margin: 15px 0;">
-            <p style="font-size: 0.85rem; color: #a2cfb6; margin: 0;"><b>Lo que capturó tu micrófono:</b> <br><i id="transcript" style="color: #fff;"></i></p>
+            <h4 style="margin-top:0; color: var(--primary);">🧠 Evaluación:</h4>
+            <p id="ia-response" style="line-height: 1.5; color: #eee; font-size: 0.95rem;"></p>
+            <p style="font-size: 0.8rem; color: #888; margin-bottom:0;">Transcripción: <i id="transcript" style="color:#fff;"></i></p>
         </div>
     </div>
 </div>
 
 <script>
-    // --- MAPA CURRICULAR Y LOGÍSTICA DEL ENTRENAMIENTO ---
+    // Capturador de errores en pantalla
+    window.onerror = function(msg, url, line) {
+        document.getElementById('error-log').innerText += "\n[Error] Línea " + line + ": " + msg;
+    };
+
     const courseData = [
         {
-            id: 1, title: "Módulo 1: Fundamentos de la Voz",
+            id: 1, title: "Módulo 1: Respiración y Dicción",
             exercises: [
-                { id: "m1e1", name: "Respiración 4-4-6 y Control", type: "lectura", theory: "<b>Estrategia de Apoyo:</b> Inhala por la nariz inflando el abdomen durante 4 segundos, retén el aire por 4 segundos y lee el siguiente texto expulsándolo de manera uniforme. No permitas que la voz caiga o pierda fuerza al final de la frase.", text: "Controlar el flujo de aire es el secreto de los grandes comunicadores. Al dosificar mi capacidad pulmonar de manera correcta, logro proyectar seguridad, evito la fatiga vocal y mantengo el control absoluto de mi mensaje desde la primera hasta la última palabra." }
+                { id: "e1", name: "Trabalenguas Progresivo", type: "lectura", theory: "Abre bien la boca para articular cada sílaba. Mantén el ritmo sin correr.", text: "Compró Paco pocas copas y, como pocas copas compró, pocas copas pagó." }
             ]
         },
         {
-            id: 2, title: "Módulo 2: Dicción y Articulación",
+            id: 2, title: "Módulo 2: Producción Radial",
             exercises: [
-                { id: "m2e1", name: "Trabalenguas: Agilidad Mandibular", type: "lectura", theory: "<b>Estrategia de Articulación:</b> Exagera la apertura de la boca al pronunciar las consonantes 'T', 'R' y 'P'. El objetivo no es la velocidad extrema, sino que cada sílaba se escuche limpia e independiente.", text: "El arzobispo de Constantinopla se quiere desarzobisconstantinopolizar. El desarzobisconstantinopolizador que lo desarzobisconstantinopolice, buen desarzobisconstantinopolizador será." }
+                { id: "e2", name: "Transición: De Solemne a Enérgico", type: "lectura", theory: "Inicia con un tono profundo y pausado. En el punto suspensivo, cambia radicalmente la energía, sube el tono y proyecta entusiasmo de presentador comercial.", text: "A veces olvidamos lo verdaderamente importante de la vida, y dejamos que el estrés controle nuestro día... ¡Pero hoy no! ¡Sube ese volumen porque arranca tu programa número uno con la mejor programación de la ciudad!" }
             ]
         },
         {
-            id: 3, title: "Módulo 3: Entonación y Expresividad",
+            id: 3, title: "Módulo 3: Oratoria Pública",
             exercises: [
-                { id: "m3e1", name: "Silencios Expresivos (El poder de las comas)", type: "lectura", theory: "<b>Estrategia Dramática:</b> Hablar bonito no es gritar duro, es saber usar los silencios. Detén el ritmo por completo en cada punto suspensivo (...). Cambia drásticamente tu tono: empieza misterioso y cierra con autoridad.", text: "La diferencia entre un discurso plano y uno memorable... no radica en las palabras escritas... sino en el peso que le otorgas al silencio. Cuando haces una pausa estratégica... obligas a tu audiencia a procesar la profundidad
+                { id: "e3", name: "Improvisación: Corte de Invitado", type: "improvisacion", theory: "Reto libre: Tienes a un invitado hablando sin parar. Improvisa una interrupción elegante para cortar su idea y mandarnos a comerciales.", text: "PREMISA: El invitado habla de algo técnico y aburrido. Interrúmpelo con cortesía y despide el bloque." }
+            ]
+        }
+    ];
+
+    let currentExercise = null;
+    let storedKey = localStorage.getItem('gemini_api_key');
+
+    const setupCard = document.getElementById('setup-card');
+    const modulesContainer = document.getElementById('modules-container');
+
+    // Control de vista según la llave
+    if (storedKey) {
+        modulesContainer.style.display = 'block';
+    } else {
+        setupCard.style.display = 'block';
+    }
+
+    document.getElementById('save-key-btn').onclick = () => {
+        const key = document.getElementById('api-key').value.trim();
+        if(key.length > 10) {
+            localStorage.setItem('gemini_api_key', key);
+            storedKey = key;
+            setupCard.style.display = 'none';
+            modulesContainer.style.display = 'block';
+        } else {
+            alert("Por favor ingresa una llave válida.");
+        }
+    };
+
+    // Renderizar Módulos
+    courseData.forEach(module => {
+        const modDiv = document.createElement('div');
+        modDiv.className = 'module';
+        let exList = module.exercises.map(ex => `<li id="li-${ex.id}" onclick="loadExercise('${module.id}','${ex.id}')">${ex.name}</li>`).join('');
+        modDiv.innerHTML = `<div class="module-header" onclick="this.parentElement.classList.toggle('active')"><span>${module.title}</span> <span>▼</span></div><div class="module-content"><ul class="exercises">${exList}</ul></div>`;
+        modulesContainer.appendChild(modDiv);
+    });
+
+    function loadExercise(modId, exId) {
+        const mod = courseData.find(m => m.id == modId);
+        currentExercise = mod.exercises.find(e => e.id == exId);
+        
+        document.getElementById('practice-zone').style.display = 'block';
+        document.getElementById('ex-title').innerText = currentExercise.name;
+        document.getElementById('ex-theory').innerHTML = `<b>Estrategia:</b> ${currentExercise.theory}`;
+        document.getElementById('script-text').innerText = currentExercise.text;
+        document.getElementById('ex-type').innerText = currentExercise.type === 'lectura' ? 'TEXTO A LEER' : 'RETO DE IMPROVISACIÓN';
+        
+        document.querySelectorAll('ul.exercises li').forEach(li => li.classList.remove('selected'));
+        document.getElementById(`li-${exId}`).classList.add('selected');
+        document.getElementById('feedback-area').style.display = 'none';
+        document.getElementById('practice-zone').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Grabación
+    const recordBtn = document.getElementById('record-btn');
+    let isRecording = false, recognition, finalTranscript = '';
+
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.lang = 'es-DO';
+        recognition.onresult = (e) => {
+            for (let i = e.resultIndex; i < e.results.length; ++i) {
+                if (e.results[i].isFinal) finalTranscript += e.results[i][0].transcript + " ";
+            }
+        };
+        recognition.onend = () => {
+            if(finalTranscript.trim().length > 0) sendToGemini(finalTranscript.trim());
+            else {
+                document.getElementById('loader').style.display = 'none';
+                alert("No detecté voz. Proyecta más fuerte o revisa los permisos.");
+            }
+        };
+    }
+
+    recordBtn.onclick = () => {
+        if(!isRecording) {
+            finalTranscript = '';
+            recognition.start();
+            isRecording = true;
+            recordBtn.innerText = "🛑 Detener y Evaluar";
+            recordBtn.classList.add('recording');
+            document.getElementById('feedback-area').style.display = 'none';
+        } else {
+            recognition.stop();
+            isRecording = false;
+            recordBtn.innerText = "🎤 Iniciar Práctica";
+            recordBtn.classList.remove('recording');
+            document.getElementById('loader').style.display = 'block';
+        }
+    };
+
+    async function sendToGemini(transcript) {
+        document.getElementById('transcript').innerText = transcript;
+        const prompt = `Actúas como profesor de locución. Ejercicio: ${currentExercise.name}. Estrategia: ${currentExercise.theory}. Texto/Premisa: ${currentExercise.text}. Voz del alumno: "${transcript}". Si es lectura, evalúa articulación y cumplimiento de la estrategia. Si es improvisación, evalúa fluidez y resolución. Sé directo (1 párrafo).`;
+        
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${storedKey}`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            const data = await res.json();
+            if(data.error) throw new Error(data.error.message);
+            document.getElementById('ia-response').innerHTML = data.candidates[0].content.parts[0].text.replace(/\n/g, '<br>');
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('feedback-area').style.display = 'block';
+        } catch (err) {
+            document.getElementById('loader').style.display = 'none';
+            alert("Error IA: " + err.message + ". Revisa tu llave.");
+            localStorage.removeItem('gemini_api_key');
+            location.reload();
+        }
+    }
+</script>
+</body>
+</html>
