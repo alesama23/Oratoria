@@ -80,26 +80,57 @@
         document.getElementById('error-log').innerText += "\n[Error] Línea " + line + ": " + msg;
     };
 
-    const courseData = [
+        const courseData = [
         {
-            id: 1, title: "Módulo 1: Respiración y Dicción",
+            id: 1, title: "Módulo 1: Fundamentos de la voz",
             exercises: [
-                { id: "e1", name: "Trabalenguas Progresivo", type: "lectura", theory: "Abre bien la boca para articular cada sílaba. Mantén el ritmo sin correr.", text: "Compró Paco pocas copas y, como pocas copas compró, pocas copas pagó." }
+                { id: "m1e1", name: "Respiración 4-4-6", type: "lectura", theory: "Inhala en 4 segundos, retén 4 segundos y lee expulsando el aire suavemente. Controlar el aire es la base de todo.", text: "La respiración diafragmática es el motor de la voz. Si respiro bien, no me canso, no me duele la garganta y mi voz suena con mucha más autoridad y presencia." }
             ]
         },
         {
-            id: 2, title: "Módulo 2: Producción Radial",
+            id: 2, title: "Módulo 2: Dicción y articulación",
             exercises: [
-                { id: "e2", name: "Transición: De Solemne a Enérgico", type: "lectura", theory: "Inicia con un tono profundo y pausado. En el punto suspensivo, cambia radicalmente la energía, sube el tono y proyecta entusiasmo de presentador comercial.", text: "A veces olvidamos lo verdaderamente importante de la vida, y dejamos que el estrés controle nuestro día... ¡Pero hoy no! ¡Sube ese volumen porque arranca tu programa número uno con la mejor programación de la ciudad!" }
+                { id: "m2e1", name: "Agilidad Mandibular", type: "lectura", theory: "Abre bien la boca. Exagera la pronunciación de las consonantes. No busques velocidad, busca claridad absoluta.", text: "Compró Paco pocas copas y, como pocas copas compró, pocas copas pagó. Tres tristes tigres tragan trigo en un trigal." }
             ]
         },
         {
-            id: 3, title: "Módulo 3: Oratoria Pública",
+            id: 3, title: "Módulo 3: Entonación y expresividad",
             exercises: [
-                { id: "e3", name: "Improvisación: Corte de Invitado", type: "improvisacion", theory: "Reto libre: Tienes a un invitado hablando sin parar. Improvisa una interrupción elegante para cortar su idea y mandarnos a comerciales.", text: "PREMISA: El invitado habla de algo técnico y aburrido. Interrúmpelo con cortesía y despide el bloque." }
+                { id: "m3e1", name: "El poder de las pausas", type: "lectura", theory: "Haz una pausa completa en cada signo de puntuación. Cambia la intención: empieza misterioso y termina motivador.", text: "A veces... el mayor ruido no está en la calle, sino en nuestra mente. Pero hoy, justo ahora, tienes la oportunidad de apagar ese ruido y hacer que tu voz resuene con fuerza." }
+            ]
+        },
+        {
+            id: 4, title: "Módulo 4: Locución radial",
+            exercises: [
+                { id: "m4e1", name: "Transición: Solemne a Enérgico", type: "lectura", theory: "Inicia con voz profunda. En los puntos suspensivos, sonríe, sube el volumen y proyecta energía de cabina FM.", text: "En medio de la rutina, siempre hace falta un respiro... ¡Y para eso estamos aquí! ¡Súbele a tu radio porque arranca el bloque más interactivo, alegre y explosivo de tu mañana!" }
+            ]
+        },
+        {
+            id: 5, title: "Módulo 5: Oratoria pública",
+            exercises: [
+                { id: "m5e1", name: "Apertura Impactante", type: "improvisacion", theory: "Reto de improvisación. Tienes al público frente a ti. Habla 30 segundos sin guion usando una pregunta retórica para captar su atención.", text: "PREMISA: Inicia un discurso frente a 100 personas preguntándoles por qué le tienen miedo al fracaso, y dales una respuesta motivadora rápida." }
+            ]
+        },
+        {
+            id: 6, title: "Módulo 6: Comunicación frente a cámara",
+            exercises: [
+                { id: "m6e1", name: "Mensaje para Redes Sociales", type: "lectura", theory: "Imagina que miras al lente de tu cámara. Habla rápido pero articulado, con mucha energía visual para retener la atención.", text: "¡Tres errores que estás cometiendo al hablar en público! Número uno: esconder las manos. Número dos: no hacer pausas. Y número tres: no respirar antes de empezar." }
+            ]
+        },
+        {
+            id: 7, title: "Módulo 7: Entrevistas y conducción",
+            exercises: [
+                { id: "m7e1", name: "Controlar a un Invitado", type: "improvisacion", theory: "Reto de improvisación. Tu invitado no deja de hablar y tienes que ir a la pausa comercial. Córtalo con elegancia.", text: "PREMISA: Interrumpe amablemente al invitado, resume lo que dijo en 5 segundos y manda el programa a una pausa comercial prometiendo regresar." }
+            ]
+        },
+        {
+            id: 8, title: "Módulo 8: Proyecto final",
+            exercises: [
+                { id: "m8e1", name: "Demo Profesional", type: "lectura", theory: "Aplica todo: respiración, dicción perfecta, ritmo ágil y energía radial. Esta es tu carta de presentación.", text: "Estás escuchando la nueva era de la comunicación. Somos la voz que te acompaña, la energía que te mueve y la información que necesitas. Estás en sintonía perfecta... ¡No te despegues!" }
             ]
         }
     ];
+
 
     let currentExercise = null;
     let storedKey = localStorage.getItem('gemini_api_key');
