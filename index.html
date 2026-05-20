@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OratoriaPro - Entrenamiento de Locución</title>
+    <style>
+        :root {
+            --bg: #121212; --surface: #1e1e1e; --primary: #00ff88; --text: #ffffff; --text-muted: #aaaaaa;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; text-align: center;
+        }
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 { font-size: 1.8rem; color: var(--primary); }
+        .lesson-card {
+            background-color: var(--surface); border-radius: 15px; padding: 20px; margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        select {
+            width: 100%; padding: 15px; border-radius: 10px; background: #333; color: white;
+            border: 1px solid #555; font-size: 1.1rem; margin-bottom: 20px;
+        }
+        #script-text { font-size: 1.3rem; line-height: 1.6; font-weight: 300; margin-bottom: 20px; color: #ddd; }
+        button {
+            background-color: var(--primary); color: #000; border: none; padding: 15px 30px;
+            border-radius: 30px; font-size: 1.2rem; font-weight: bold; width: 100%; cursor: pointer;
+            transition: transform 0.1s;
+        }
+        button:active { transform: scale(0.95); }
+        button.recording { background-color: #ff3366; color: white; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        #feedback-area {
+            margin-top: 20px; padding: 15px; border-radius: 10px; background: #2a2a2a; display: none; text-align: left;
+        }
+        .metric { font-size: 1.1rem; margin-bottom: 10px; }
+        .metric span { font-weight: bold; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎙️ OratoriaPro</h1>
+    <p>Entrenamiento local en tu móvil</p>
+
+    <div class="lesson-card">
+        <select id="lesson-selector">
+            <option value="diccion">Módulo 1: Dicción Clara (Trabalenguas)</option>
+            <option value="energia">Módulo 2: Energía y Proyección (Promo Radial)</option>
+            <option value="pausas">Módulo 3: Pausas y Ritmo (Noticias)</option>
+        </select>
+
+        <div id="script-text">Selecciona una lección para ver el guion.</div>
+        
+        <button id="record-btn">🎤 Iniciar Práctica</button>
+    </div>
+
+    <div id="feedback-area">
+        <h3>📊 Análisis de tu voz:</h3>
+        <div class="metric">Precisión de lectura: <span id="accuracy">0%</span></div>
+        <div class="metric">Velocidad (PPM): <span id="wpm">0</span></div>
+        <div class="metric">Diagnóstico: <span id="diagnosis" style="color: #fff;">-</span></div>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 15px;">Lo que escuchó la app: <i id="transcript">...</i></p>
+    </div>
+</div>
+
+<script>
+    const lessons = {
+        diccion: "Tres tristes tigres tragaban trigo en un trigal en tres tristes trastos. En tres tristes trastos tragaban trigo tres tristes tigres.",
+        energia: "¡Despierta con la mejor energía! Aquí comienza tu programa favorito, lleno de música, reflexiones y todo lo que necesitas para arrancar tu día al máximo.",
+        pausas: "En el ámbito internacional... los mercados cerraron al alza hoy... marcando una recuperación significativa... tras las pérdidas de la semana pasada."
+    };
+
+    const lessonSelector = document.getElementById('lesson-selector');
+    const scriptText = document.getElementById('script-text');
+    const recordBtn = document.getElementById('record-btn');
+    const feedbackArea = document.getElementById('feedback-area');
+    
+    let isRecording = false;
+    let recognition;
+    let startTime;
+
+    // Inicializar guion
+    scriptText.innerText = lessons[lessonSelector.value];
+    lessonSelector.addEventListener('change', (e) => scriptText.innerText = lessons[e.target.value]);
+
+    // Configurar API de Reconocimiento de Voz
+    if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = false;
+        recognition.lang = 'es-DO'; // Configurado para acento dominicano
+    } else {
+        alert("Tu navegador no soporta la API de voz nativa. Usa Google Chrome en tu Android.");
+    }
+
+    recordBtn.addEventListener('click', () => {
+        if (!isRecording) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    });
+
+    function startRecording() {
+        recognition.start();
+        isRecording = true;
+        startTime = new Date();
+        recordBtn.innerText = "🛑 Detener Práctica";
+        recordBtn.classList.add('recording');
+        feedbackArea.style.display = 'none';
+    }
+
+    function stopRecording() {
+        recognition.stop();
+        isRecording = false;
+        recordBtn.innerText = "🎤 Iniciar Práctica";
+        recordBtn.classList.remove('recording');
+    }
+
+    recognition.onresult = function(event) {
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+                finalTranscript += event.results[i][0].transcript;
+            }
+        }
+        analyzeSpeech(finalTranscript.trim());
+    };
+
+    function analyzeSpeech(transcript) {
+        const endTime = new Date();
+        const durationMin = (endTime - startTime) / 60000;
+        
+        const originalText = scriptText.innerText.toLowerCase().replace(/[.,!¡¿?]/g, '');
+        const spokenText = transcript.toLowerCase().replace(/[.,!¡¿?]/g, '');
+        
+        const originalWords = originalText.split(' ');
+        const spokenWords = spokenText.split(' ');
+        
+        // Calcular PPM
+        const wpm = Math.round(spokenWords.length / durationMin);
+        
+        // Calcular precisión (simplificada)
+        let matches = 0;
+        spokenWords.forEach(word => {
+            if (originalWords.includes(word)) matches++;
+        });
+        const accuracy = Math.min(Math.round((matches / originalWords.length) * 100), 100);
+
+        // Diagnóstico
+        let diagnosis = "Excelente lectura.";
+        if (accuracy < 70) diagnosis = "Omisión de palabras. Mejora tu articulación.";
+        if (wpm > 160) diagnosis += " Hablaste muy rápido, haz pausas.";
+        if (wpm < 110) diagnosis += " Ritmo muy lento, dale más dinamismo.";
+
+        // Mostrar resultados
+        document.getElementById('accuracy').innerText = accuracy + '%';
+        document.getElementById('wpm').innerText = wpm;
+        document.getElementById('diagnosis').innerText = diagnosis;
+        document.getElementById('transcript').innerText = transcript;
+        feedbackArea.style.display = 'block';
+    }
+</script>
+</body>
+</html>
