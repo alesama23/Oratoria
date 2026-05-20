@@ -3,240 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OratoriaPro Academy</title>
+    <title>OratoriaPro Master v4</title>
     <style>
-        :root { --bg: #0f0f13; --surface: #1c1c24; --primary: #00e676; --text: #ffffff; --text-muted: #8d8d99; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; padding-bottom: 80px; }
+        :root { --bg: #0b0b0f; --surface: #16161f; --primary: #00e676; --accent: #29b6f6; --text: #ffffff; --text-muted: #8d8d99; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; padding-bottom: 60px; }
         .container { max-width: 700px; margin: 0 auto; }
-        h1 { color: var(--primary); text-align: center; margin-bottom: 5px; }
-        .subtitle { text-align: center; color: var(--text-muted); margin-top: 0; margin-bottom: 30px; }
+        h1 { color: var(--primary); text-align: center; margin-bottom: 5px; font-size: 1.8rem; }
+        .subtitle { text-align: center; color: var(--text-muted); margin-top: 0; margin-bottom: 25px; font-size: 0.95rem; }
         
         /* Sistema de Módulos (Acordeón) */
-        .module { background: var(--surface); border-radius: 12px; margin-bottom: 15px; overflow: hidden; border: 1px solid #333; }
-        .module-header { padding: 15px 20px; background: #252530; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-        .module-header:hover { background: #2d2d3a; }
-        .module-content { padding: 0 20px; display: none; }
-        .module.active .module-content { display: block; padding: 15px 20px; }
-        .module.active .module-header { border-bottom: 1px solid #333; color: var(--primary); }
+        .module { background: var(--surface); border-radius: 12px; margin-bottom: 12px; overflow: hidden; border: 1px solid #2a2a35; }
+        .module-header { padding: 15px 20px; background: #1e1e28; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 1rem; }
+        .module-header:hover { background: #252533; }
+        .module-content { padding: 0; display: none; }
+        .module.active .module-content { display: block; }
+        .module.active .module-header { border-bottom: 1px solid #2a2a35; color: var(--primary); }
         
         /* Lista de ejercicios */
         .exercise-list { list-style: none; padding: 0; margin: 0; }
-        .exercise-list li { padding: 12px; background: #1a1a20; margin-bottom: 8px; border-radius: 8px; border-left: 3px solid transparent; cursor: pointer; transition: 0.2s; }
-        .exercise-list li:hover { background: #22222a; }
-        .exercise-list li.selected { border-left-color: var(--primary); background: #14291f; }
+        .exercise-list li { padding: 15px 20px; background: #16161f; border-bottom: 1px solid #22222c; cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
+        .exercise-list li:last-child { border-bottom: none; }
+        .exercise-list li:hover { background: #1e1e28; }
+        .exercise-list li.selected { border-left: 4px solid var(--primary); background: #10251a; }
         
         /* Zona de Práctica */
-        .practice-zone { background: #111; padding: 20px; border-radius: 12px; margin-top: 20px; border: 1px dashed #444; display: none; }
-        #script-text { font-size: 1.25rem; line-height: 1.6; color: #eee; margin-bottom: 20px; font-weight: 300; }
+        .practice-zone { background: #000000; padding: 20px; border-radius: 16px; margin-top: 25px; border: 1px solid #333; display: none; }
+        
+        /* Caja de Teoría y Estrategia */
+        .theory-box { background: #101a24; border-left: 4px solid var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; line-height: 1.5; color: #ced4da; }
+        .theory-box b { color: var(--accent); }
+
+        /* Guion o Premisa */
+        .script-box { background: #16161f; padding: 20px; border-radius: 10px; border: 1px solid #2a2a35; margin-bottom: 20px; }
+        .script-type { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); margin-bottom: 8px; font-weight: bold; }
+        #script-text { font-size: 1.25rem; line-height: 1.6; color: #fff; font-weight: 300; }
         
         button { background: var(--primary); color: #000; border: none; padding: 16px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; width: 100%; cursor: pointer; transition: 0.2s; }
         button.recording { background: #ff3366; color: white; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(0.98); } 100% { transform: scale(1); } }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
         
-        .ia-feedback { margin-top: 20px; padding: 15px; background: #0b2e1f; border-radius: 10px; display: none; }
-        .loader { display: none; text-align: center; margin-top: 15px; color: var(--primary); }
+        .ia-feedback { margin-top: 25px; padding: 20px; background: #0b2e1f; border: 1px solid var(--primary); border-radius: 12px; display: none; }
+        .loader { display: none; text-align: center; margin-top: 15px; color: var(--primary); font-style: italic; font-size: 0.95rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>🎙️ OratoriaPro Academy</h1>
-    <p class="subtitle">Programa Estructurado de Entrenamiento Vocal</p>
+    <p class="subtitle">Entrenador Vocal de Alta Competencia para Radio y Público</p>
 
     <div id="modules-container"></div>
 
     <div class="practice-zone" id="practice-zone">
-        <h3 id="exercise-title" style="color: var(--primary); margin-top: 0;">Selecciona un ejercicio</h3>
-        <div id="script-text">...</div>
-        <button id="record-btn">🎤 Iniciar Grabación</button>
+        <h3 id="exercise-title" style="color: var(--primary); margin-top: 0; font-size: 1.3rem;"></h3>
         
-        <div class="loader" id="loader">Gemini está evaluando tu técnica...</div>
+        <div class="theory-box" id="theory-box"></div>
+        
+        <div class="script-box">
+            <div class="script-type" id="script-type">Lectura</div>
+            <div id="script-text"></div>
+        </div>
+
+        <button id="record-btn">🎤 Iniciar Grabación</button>
+        <p id="instruction-sub" style="font-size: 0.8rem; text-align: center; color: var(--text-muted); margin-top: 10px;"></p>
+        
+        <div class="loader" id="loader">🔄 El Profesor IA está procesando tu entrega vocal...</div>
         
         <div class="ia-feedback" id="feedback-area">
-            <h4 style="margin-top: 0; color: #fff;">🧠 Evaluación:</h4>
-            <p id="ia-response">...</p>
-            <hr style="border-color: #333;">
-            <p style="font-size: 0.8rem; color: #888;">Transcripción: <i id="transcript"></i></p>
+            <h4 style="margin-top: 0; color: var(--primary); font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">🧠 Evaluación del Profesor:</h4>
+            <p id="ia-response" style="line-height: 1.6; font-size: 1rem; margin-bottom: 15px; color: #f0f0f0;"></p>
+            <hr style="border-color: #144d34; margin: 15px 0;">
+            <p style="font-size: 0.85rem; color: #a2cfb6; margin: 0;"><b>Lo que capturó tu micrófono:</b> <br><i id="transcript" style="color: #fff;"></i></p>
         </div>
     </div>
 </div>
 
 <script>
-    // --- ESTRUCTURA DEL CURSO ---
+    // --- MAPA CURRICULAR Y LOGÍSTICA DEL ENTRENAMIENTO ---
     const courseData = [
         {
-            id: 1, title: "Módulo 1: Fundamentos de la voz",
+            id: 1, title: "Módulo 1: Fundamentos de la Voz",
             exercises: [
-                { id: "m1e1", name: "Lectura lenta con control", text: "Inhala profundo... Sostén. Esta es una lectura lenta. No hay prisa. El objetivo es dominar el aire y relajar la mandíbula mientras hablas." }
+                { id: "m1e1", name: "Respiración 4-4-6 y Control", type: "lectura", theory: "<b>Estrategia de Apoyo:</b> Inhala por la nariz inflando el abdomen durante 4 segundos, retén el aire por 4 segundos y lee el siguiente texto expulsándolo de manera uniforme. No permitas que la voz caiga o pierda fuerza al final de la frase.", text: "Controlar el flujo de aire es el secreto de los grandes comunicadores. Al dosificar mi capacidad pulmonar de manera correcta, logro proyectar seguridad, evito la fatiga vocal y mantengo el control absoluto de mi mensaje desde la primera hasta la última palabra." }
             ]
         },
         {
-            id: 2, title: "Módulo 2: Dicción y articulación",
+            id: 2, title: "Módulo 2: Dicción y Articulación",
             exercises: [
-                { id: "m2e1", name: "Trabalenguas progresivos", text: "Compró Paco pocas copas y, como pocas copas compró, pocas copas pagó. Tres tristes tigres tragan trigo en un trigal." },
-                { id: "m2e2", name: "Lectura de noticias cortas", text: "En el ámbito económico, los mercados cerraron la jornada con un alza del tres por ciento, marcando un récord histórico en el último trimestre." }
+                { id: "m2e1", name: "Trabalenguas: Agilidad Mandibular", type: "lectura", theory: "<b>Estrategia de Articulación:</b> Exagera la apertura de la boca al pronunciar las consonantes 'T', 'R' y 'P'. El objetivo no es la velocidad extrema, sino que cada sílaba se escuche limpia e independiente.", text: "El arzobispo de Constantinopla se quiere desarzobisconstantinopolizar. El desarzobisconstantinopolizador que lo desarzobisconstantinopolice, buen desarzobisconstantinopolizador será." }
             ]
         },
         {
-            id: 3, title: "Módulo 3: Entonación y expresividad",
+            id: 3, title: "Módulo 3: Entonación y Expresividad",
             exercises: [
-                { id: "m3e1", name: "Diferencia entre informar y motivar", text: "(Informando): La temperatura actual es de 28 grados. (Motivando): ¡Qué día tan espectacular tenemos hoy! Perfecto para salir y comernos el mundo." }
-            ]
-        },
-        {
-            id: 4, title: "Módulo 4: Locución radial",
-            exercises: [
-                { id: "m4e1", name: "Apertura de programa (Alta Energía)", text: "¡Señoras y señores, muy buenos días! Sube el volumen de tu radio porque aquí arranca tu programa favorito. ¡Con la mejor energía, el mejor ritmo y todo lo que necesitas para activar tu mañana!" },
-                { id: "m4e2", name: "Lectura de cuña comercial", text: "La frescura que mereces está a la vuelta de tu esquina. Visita nuestro nuevo local y descubre el sabor que está cambiando la ciudad. ¡Te esperamos hoy!" }
-            ]
-        },
-        {
-            id: 5, title: "Módulo 5: Oratoria pública",
-            exercises: [
-                { id: "m5e1", name: "Apertura impactante", text: "¿Alguna vez se han preguntado por qué hacemos lo que hacemos todos los días? Hoy no vine a darles respuestas fáciles, vine a cambiar la forma en la que ven su rutina." }
-            ]
-        },
-        {
-            id: 6, title: "Módulo 6: Comunicación frente a cámara",
-            exercises: [
-                { id: "m6e1", name: "Introducción para YouTube", text: "¡Hola a todos y bienvenidos de nuevo al canal! Si es tu primera vez por aquí, asegúrate de suscribirte porque hoy vamos a analizar un tema que me han pedido muchísimo en los comentarios." }
-            ]
-        },
-        {
-            id: 7, title: "Módulo 7: Entrevistas y conducción",
-            exercises: [
-                { id: "m7e1", name: "Presentación de invitado", text: "Nuestro invitado de hoy no necesita mucha introducción. Es un pionero en su área, un visionario y alguien cuyas ideas están transformando la industria. Por favor, demos la bienvenida a nuestro estudio a..." }
-            ]
-        },
-        {
-            id: 8, title: "Módulo 8: Proyecto final",
-            exercises: [
-                { id: "m8e1", name: "Demo de lectura expresiva", text: "El silencio llenó la sala. Nadie esperaba esa respuesta. Sin embargo, en medio de la confusión, una voz se alzó con determinación, dejando claro que el juego apenas comenzaba." }
-            ]
-        }
-    ];
-
-    // --- LÓGICA DE INTERFAZ ---
-    const container = document.getElementById('modules-container');
-    const practiceZone = document.getElementById('practice-zone');
-    const scriptText = document.getElementById('script-text');
-    const exerciseTitle = document.getElementById('exercise-title');
-    
-    let currentExerciseText = "";
-    let currentContext = "";
-
-    // Renderizar Módulos
-    courseData.forEach(module => {
-        const modDiv = document.createElement('div');
-        modDiv.className = 'module';
-        
-        let exercisesHTML = module.exercises.map(ex => 
-            `<li onclick="loadExercise('${ex.id}', '${ex.name.replace(/'/g, "\\'")}', '${ex.text.replace(/'/g, "\\'")}')">${ex.name}</li>`
-        ).join('');
-
-        modDiv.innerHTML = `
-            <div class="module-header" onclick="toggleModule(this)">
-                <span>${module.title}</span> <span>▼</span>
-            </div>
-            <div class="module-content">
-                <ul class="exercise-list">${exercisesHTML}</ul>
-            </div>
-        `;
-        container.appendChild(modDiv);
-    });
-
-    function toggleModule(header) {
-        document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
-        header.parentElement.classList.add('active');
-    }
-
-    function loadExercise(id, name, text) {
-        practiceZone.style.display = 'block';
-        exerciseTitle.innerText = name;
-        scriptText.innerText = text;
-        currentExerciseText = text;
-        currentContext = name;
-        
-        document.querySelectorAll('.exercise-list li').forEach(li => li.classList.remove('selected'));
-        event.target.classList.add('selected');
-        
-        practiceZone.scrollIntoView({ behavior: 'smooth' });
-        document.getElementById('feedback-area').style.display = 'none';
-    }
-
-    // --- LÓGICA DE GRABACIÓN E IA ---
-    const recordBtn = document.getElementById('record-btn');
-    let isRecording = false;
-    let recognition;
-    let finalTranscript = '';
-
-    // Obtener API Key de la memoria del teléfono
-    const storedKey = localStorage.getItem('gemini_api_key');
-    if (!storedKey) {
-        alert("Falta tu llave API. Agrega temporalmente un input en el HTML o configúrala en Vercel para mayor seguridad.");
-    }
-
-    if ('webkitSpeechRecognition' in window) {
-        recognition = new webkitSpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = false;
-        recognition.lang = 'es-DO';
-        
-        recognition.onresult = (event) => {
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-                if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript + " ";
-            }
-        };
-
-        recognition.onend = () => {
-            if(finalTranscript.trim().length > 0) {
-                analyzeWithAI(finalTranscript, currentExerciseText, currentContext);
-            } else {
-                document.getElementById('loader').style.display = 'none';
-                alert("🎙️ No detecté voz. Revisa el volumen o los permisos del micrófono.");
-            }
-        };
-    }
-
-    recordBtn.onclick = () => {
-        if (!isRecording) {
-            finalTranscript = '';
-            recognition.start();
-            isRecording = true;
-            recordBtn.innerText = "🛑 Terminar Grabación";
-            recordBtn.classList.add('recording');
-            document.getElementById('feedback-area').style.display = 'none';
-        } else {
-            recognition.stop();
-            isRecording = false;
-            recordBtn.innerText = "🎤 Iniciar Grabación";
-            recordBtn.classList.remove('recording');
-            document.getElementById('loader').style.display = 'block';
-        }
-    };
-
-    async function analyzeWithAI(transcript, originalText, context) {
-        document.getElementById('transcript').innerText = transcript;
-        const prompt = `Actúa como un profesor senior de locución. El alumno hace el ejercicio: "${context}". Texto original: "${originalText}". Voz reconocida: "${transcript}". Evalúa la precisión, si omitió palabras, y evalúa si la intención vocal parece correcta para el ejercicio. Sé directo y motivador (máximo 2 párrafos).`;
-
-        try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${storedKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-            });
-            const data = await response.json();
-            if(data.error) throw new Error(data.error.message);
-            
-            document.getElementById('ia-response').innerHTML = data.candidates[0].content.parts[0].text.replace(/\n/g, '<br>');
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('feedback-area').style.display = 'block';
-            
-        } catch (error) {
-            document.getElementById('loader').style.display = 'none';
-            alert("Error con la IA: " + error);
-        }
-    }
-</script>
-</body>
-</html>
+                { id: "m3e1", name: "Silencios Expresivos (El poder de las comas)", type: "lectura", theory: "<b>Estrategia Dramática:</b> Hablar bonito no es gritar duro, es saber usar los silencios. Detén el ritmo por completo en cada punto suspensivo (...). Cambia drásticamente tu tono: empieza misterioso y cierra con autoridad.", text: "La diferencia entre un discurso plano y uno memorable... no radica en las palabras escritas... sino en el peso que le otorgas al silencio. Cuando haces una pausa estratégica... obligas a tu audiencia a procesar la profundidad
