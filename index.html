@@ -1,117 +1,180 @@
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OratoriaPro Master - Entrenador IA</title>
+    <title>OratoriaPro Academy</title>
     <style>
-        :root { --bg: #121212; --surface: #1e1e1e; --primary: #00ff88; --text: #ffffff; }
-        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; text-align: center; }
-        h1 { color: var(--primary); margin-bottom: 5px; }
-        .card { background: var(--surface); border-radius: 15px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); text-align: left; }
-        select, input { width: 100%; padding: 12px; border-radius: 8px; background: #333; color: white; border: 1px solid #555; font-size: 1rem; margin-bottom: 15px; box-sizing: border-box; }
-        #script-text { font-size: 1.2rem; line-height: 1.6; color: #ddd; padding: 15px; background: #2a2a2a; border-left: 4px solid var(--primary); border-radius: 5px; margin-bottom: 20px; }
-        button { background: var(--primary); color: #000; border: none; padding: 15px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; width: 100%; cursor: pointer; transition: 0.2s; }
-        button:disabled { background: #555; color: #888; }
+        :root { --bg: #0f0f13; --surface: #1c1c24; --primary: #00e676; --text: #ffffff; --text-muted: #8d8d99; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; padding-bottom: 80px; }
+        .container { max-width: 700px; margin: 0 auto; }
+        h1 { color: var(--primary); text-align: center; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: var(--text-muted); margin-top: 0; margin-bottom: 30px; }
+        
+        /* Sistema de Módulos (Acordeón) */
+        .module { background: var(--surface); border-radius: 12px; margin-bottom: 15px; overflow: hidden; border: 1px solid #333; }
+        .module-header { padding: 15px 20px; background: #252530; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+        .module-header:hover { background: #2d2d3a; }
+        .module-content { padding: 0 20px; display: none; }
+        .module.active .module-content { display: block; padding: 15px 20px; }
+        .module.active .module-header { border-bottom: 1px solid #333; color: var(--primary); }
+        
+        /* Lista de ejercicios */
+        .exercise-list { list-style: none; padding: 0; margin: 0; }
+        .exercise-list li { padding: 12px; background: #1a1a20; margin-bottom: 8px; border-radius: 8px; border-left: 3px solid transparent; cursor: pointer; transition: 0.2s; }
+        .exercise-list li:hover { background: #22222a; }
+        .exercise-list li.selected { border-left-color: var(--primary); background: #14291f; }
+        
+        /* Zona de Práctica */
+        .practice-zone { background: #111; padding: 20px; border-radius: 12px; margin-top: 20px; border: 1px dashed #444; display: none; }
+        #script-text { font-size: 1.25rem; line-height: 1.6; color: #eee; margin-bottom: 20px; font-weight: 300; }
+        
+        button { background: var(--primary); color: #000; border: none; padding: 16px; border-radius: 30px; font-size: 1.1rem; font-weight: bold; width: 100%; cursor: pointer; transition: 0.2s; }
         button.recording { background: #ff3366; color: white; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
-        .ia-feedback { margin-top: 20px; padding: 15px; background: #0b2e1f; border: 1px solid var(--primary); border-radius: 10px; display: none; }
-        .loader { display: none; text-align: center; margin-top: 15px; color: var(--primary); font-style: italic; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(0.98); } 100% { transform: scale(1); } }
+        
+        .ia-feedback { margin-top: 20px; padding: 15px; background: #0b2e1f; border-radius: 10px; display: none; }
+        .loader { display: none; text-align: center; margin-top: 15px; color: var(--primary); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🎙️ OratoriaPro Master</h1>
-    <p style="margin-top:0; color:#aaa;">Tutor IA de Locución y Oratoria</p>
+    <h1>🎙️ OratoriaPro Academy</h1>
+    <p class="subtitle">Programa Estructurado de Entrenamiento Vocal</p>
 
-    <div class="card" id="setup-card">
-        <h3>⚙️ Configuración del Tutor IA</h3>
-        <p style="font-size: 0.9rem; color: #bbb;">Para que el profesor de IA funcione, necesitas tu API Key de Google Gemini.</p>
-        <input type="password" id="api-key" placeholder="Pega tu API Key aquí...">
-        <button id="save-key-btn">Guardar Llave en el Móvil</button>
-    </div>
+    <div id="modules-container"></div>
 
-    <div class="card" id="practice-card" style="display: none;">
-        <h3>📚 Selecciona tu lección</h3>
-        <select id="lesson-selector">
-            <optgroup label="Oratoria: Signos de Puntuación">
-                <option value="comas">1. El poder de la coma (Interpretación)</option>
-                <option value="interrogacion">2. Entonación Interrogativa y Exclamativa</option>
-            </optgroup>
-            <optgroup label="Locución Profesional">
-                <option value="transicion">3. Transición de Tonos (Solemne a Enérgico)</option>
-                <option value="comercial">4. Venta Directa (Ritmo Rápido)</option>
-                <option value="narracion">5. Narración Descriptiva (Pausas y Aire)</option>
-            </optgroup>
-        </select>
-
-        <div id="script-text">Selecciona una lección.</div>
-        
+    <div class="practice-zone" id="practice-zone">
+        <h3 id="exercise-title" style="color: var(--primary); margin-top: 0;">Selecciona un ejercicio</h3>
+        <div id="script-text">...</div>
         <button id="record-btn">🎤 Iniciar Grabación</button>
-        <p style="font-size: 0.8rem; text-align: center; color: #888; margin-top: 10px;">Lee el texto de arriba. Cuando termines, detén la grabación.</p>
-
-        <div class="loader" id="loader">Gemini está analizando tu voz y técnica...</div>
-
+        
+        <div class="loader" id="loader">Gemini está evaluando tu técnica...</div>
+        
         <div class="ia-feedback" id="feedback-area">
-            <h3 style="color: var(--primary); margin-top: 0;">🧠 Evaluación del Profesor:</h3>
+            <h4 style="margin-top: 0; color: #fff;">🧠 Evaluación:</h4>
             <p id="ia-response">...</p>
-            <hr style="border-color: #333; margin: 15px 0;">
-            <p style="font-size: 0.8rem; color: #aaa;">Lo que el sistema escuchó: <br><i id="transcript"></i></p>
+            <hr style="border-color: #333;">
+            <p style="font-size: 0.8rem; color: #888;">Transcripción: <i id="transcript"></i></p>
         </div>
     </div>
 </div>
 
 <script>
-    const lessons = {
-        comas: "El maestro dijo: 'El alumno es un ignorante'. El maestro, dijo el alumno, es un ignorante. Observa cómo una pausa cambia por completo el significado de la frase.",
-        interrogacion: "¿De verdad crees que el éxito llega por accidente? ¡Por supuesto que no! Requiere preparación constante, disciplina férrea y mucha pasión.",
-        transicion: "En los momentos de reflexión, el silencio nos acompaña y la calma nos guía. Pero ahora... ¡Sube el volumen y siente el ritmo! ¡Aquí arranca la mejor programación del día para activarte al cien por ciento!",
-        comercial: "Aprovecha solo por este fin de semana nuestras ofertas exclusivas. Llévate la mejor tecnología al precio más bajo del mercado. Visítanos hoy, unidades limitadas.",
-        narracion: "El sol comenzaba a ocultarse tras las montañas. El viento soplaba suavemente entre los árboles, anunciando la llegada de una noche profunda y estrellada."
-    };
+    // --- ESTRUCTURA DEL CURSO ---
+    const courseData = [
+        {
+            id: 1, title: "Módulo 1: Fundamentos de la voz",
+            exercises: [
+                { id: "m1e1", name: "Lectura lenta con control", text: "Inhala profundo... Sostén. Esta es una lectura lenta. No hay prisa. El objetivo es dominar el aire y relajar la mandíbula mientras hablas." }
+            ]
+        },
+        {
+            id: 2, title: "Módulo 2: Dicción y articulación",
+            exercises: [
+                { id: "m2e1", name: "Trabalenguas progresivos", text: "Compró Paco pocas copas y, como pocas copas compró, pocas copas pagó. Tres tristes tigres tragan trigo en un trigal." },
+                { id: "m2e2", name: "Lectura de noticias cortas", text: "En el ámbito económico, los mercados cerraron la jornada con un alza del tres por ciento, marcando un récord histórico en el último trimestre." }
+            ]
+        },
+        {
+            id: 3, title: "Módulo 3: Entonación y expresividad",
+            exercises: [
+                { id: "m3e1", name: "Diferencia entre informar y motivar", text: "(Informando): La temperatura actual es de 28 grados. (Motivando): ¡Qué día tan espectacular tenemos hoy! Perfecto para salir y comernos el mundo." }
+            ]
+        },
+        {
+            id: 4, title: "Módulo 4: Locución radial",
+            exercises: [
+                { id: "m4e1", name: "Apertura de programa (Alta Energía)", text: "¡Señoras y señores, muy buenos días! Sube el volumen de tu radio porque aquí arranca tu programa favorito. ¡Con la mejor energía, el mejor ritmo y todo lo que necesitas para activar tu mañana!" },
+                { id: "m4e2", name: "Lectura de cuña comercial", text: "La frescura que mereces está a la vuelta de tu esquina. Visita nuestro nuevo local y descubre el sabor que está cambiando la ciudad. ¡Te esperamos hoy!" }
+            ]
+        },
+        {
+            id: 5, title: "Módulo 5: Oratoria pública",
+            exercises: [
+                { id: "m5e1", name: "Apertura impactante", text: "¿Alguna vez se han preguntado por qué hacemos lo que hacemos todos los días? Hoy no vine a darles respuestas fáciles, vine a cambiar la forma en la que ven su rutina." }
+            ]
+        },
+        {
+            id: 6, title: "Módulo 6: Comunicación frente a cámara",
+            exercises: [
+                { id: "m6e1", name: "Introducción para YouTube", text: "¡Hola a todos y bienvenidos de nuevo al canal! Si es tu primera vez por aquí, asegúrate de suscribirte porque hoy vamos a analizar un tema que me han pedido muchísimo en los comentarios." }
+            ]
+        },
+        {
+            id: 7, title: "Módulo 7: Entrevistas y conducción",
+            exercises: [
+                { id: "m7e1", name: "Presentación de invitado", text: "Nuestro invitado de hoy no necesita mucha introducción. Es un pionero en su área, un visionario y alguien cuyas ideas están transformando la industria. Por favor, demos la bienvenida a nuestro estudio a..." }
+            ]
+        },
+        {
+            id: 8, title: "Módulo 8: Proyecto final",
+            exercises: [
+                { id: "m8e1", name: "Demo de lectura expresiva", text: "El silencio llenó la sala. Nadie esperaba esa respuesta. Sin embargo, en medio de la confusión, una voz se alzó con determinación, dejando claro que el juego apenas comenzaba." }
+            ]
+        }
+    ];
 
-    // Elementos del DOM
-    const setupCard = document.getElementById('setup-card');
-    const practiceCard = document.getElementById('practice-card');
-    const apiKeyInput = document.getElementById('api-key');
-    const saveKeyBtn = document.getElementById('save-key-btn');
-    const lessonSelector = document.getElementById('lesson-selector');
+    // --- LÓGICA DE INTERFAZ ---
+    const container = document.getElementById('modules-container');
+    const practiceZone = document.getElementById('practice-zone');
     const scriptText = document.getElementById('script-text');
-    const recordBtn = document.getElementById('record-btn');
-    const feedbackArea = document.getElementById('feedback-area');
-    const loader = document.getElementById('loader');
+    const exerciseTitle = document.getElementById('exercise-title');
+    
+    let currentExerciseText = "";
+    let currentContext = "";
 
-    // Cargar API Key si existe
-    let storedKey = localStorage.getItem('gemini_api_key');
-    if (storedKey) {
-        setupCard.style.display = 'none';
-        practiceCard.style.display = 'block';
+    // Renderizar Módulos
+    courseData.forEach(module => {
+        const modDiv = document.createElement('div');
+        modDiv.className = 'module';
+        
+        let exercisesHTML = module.exercises.map(ex => 
+            `<li onclick="loadExercise('${ex.id}', '${ex.name.replace(/'/g, "\\'")}', '${ex.text.replace(/'/g, "\\'")}')">${ex.name}</li>`
+        ).join('');
+
+        modDiv.innerHTML = `
+            <div class="module-header" onclick="toggleModule(this)">
+                <span>${module.title}</span> <span>▼</span>
+            </div>
+            <div class="module-content">
+                <ul class="exercise-list">${exercisesHTML}</ul>
+            </div>
+        `;
+        container.appendChild(modDiv);
+    });
+
+    function toggleModule(header) {
+        document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+        header.parentElement.classList.add('active');
     }
 
-    saveKeyBtn.onclick = () => {
-        if(apiKeyInput.value.trim().length > 10) {
-            localStorage.setItem('gemini_api_key', apiKeyInput.value.trim());
-            storedKey = apiKeyInput.value.trim();
-            setupCard.style.display = 'none';
-            practiceCard.style.display = 'block';
-        } else {
-            alert("Por favor, ingresa una llave válida.");
-        }
-    };
+    function loadExercise(id, name, text) {
+        practiceZone.style.display = 'block';
+        exerciseTitle.innerText = name;
+        scriptText.innerText = text;
+        currentExerciseText = text;
+        currentContext = name;
+        
+        document.querySelectorAll('.exercise-list li').forEach(li => li.classList.remove('selected'));
+        event.target.classList.add('selected');
+        
+        practiceZone.scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('feedback-area').style.display = 'none';
+    }
 
-    // Cambiar texto de lección
-    scriptText.innerText = lessons[lessonSelector.value];
-    lessonSelector.onchange = (e) => {
-        scriptText.innerText = lessons[e.target.value];
-        feedbackArea.style.display = 'none';
-    };
-
-    // Lógica de grabación
+    // --- LÓGICA DE GRABACIÓN E IA ---
+    const recordBtn = document.getElementById('record-btn');
     let isRecording = false;
     let recognition;
     let finalTranscript = '';
+
+    // Obtener API Key de la memoria del teléfono
+    const storedKey = localStorage.getItem('gemini_api_key');
+    if (!storedKey) {
+        alert("Falta tu llave API. Agrega temporalmente un input en el HTML o configúrala en Vercel para mayor seguridad.");
+    }
 
     if ('webkitSpeechRecognition' in window) {
         recognition = new webkitSpeechRecognition();
@@ -127,11 +190,12 @@
 
         recognition.onend = () => {
             if(finalTranscript.trim().length > 0) {
-                analyzeWithAI(finalTranscript, scriptText.innerText, lessonSelector.options[lessonSelector.selectedIndex].text);
+                analyzeWithAI(finalTranscript, currentExerciseText, currentContext);
+            } else {
+                document.getElementById('loader').style.display = 'none';
+                alert("🎙️ No detecté voz. Revisa el volumen o los permisos del micrófono.");
             }
         };
-    } else {
-        alert("Tu navegador no soporta grabación de voz nativa.");
     }
 
     recordBtn.onclick = () => {
@@ -139,28 +203,21 @@
             finalTranscript = '';
             recognition.start();
             isRecording = true;
-            recordBtn.innerText = "🛑 Terminar y Evaluar";
+            recordBtn.innerText = "🛑 Terminar Grabación";
             recordBtn.classList.add('recording');
-            feedbackArea.style.display = 'none';
+            document.getElementById('feedback-area').style.display = 'none';
         } else {
             recognition.stop();
             isRecording = false;
             recordBtn.innerText = "🎤 Iniciar Grabación";
             recordBtn.classList.remove('recording');
-            loader.style.display = 'block';
+            document.getElementById('loader').style.display = 'block';
         }
     };
 
-    // Conexión a Gemini API
     async function analyzeWithAI(transcript, originalText, context) {
         document.getElementById('transcript').innerText = transcript;
-        
-        const prompt = `Actúa como un profesor senior de locución y oratoria. El alumno está practicando el módulo: "${context}". 
-        El texto original que debía leer era: "${originalText}". 
-        Lo que el sistema reconoció de la voz del alumno fue: "${transcript}".
-        
-        Evalúa su lectura. Si hay palabras diferentes, puede ser un error de dicción. Si el ejercicio trata de signos de puntuación o tonos comerciales/solemnes, evalúa si crees que la estructura leída refleja esa intención. 
-        Sé directo, constructivo y motivador. Limita tu respuesta a un párrafo o dos máximo.`;
+        const prompt = `Actúa como un profesor senior de locución. El alumno hace el ejercicio: "${context}". Texto original: "${originalText}". Voz reconocida: "${transcript}". Evalúa la precisión, si omitió palabras, y evalúa si la intención vocal parece correcta para el ejercicio. Sé directo y motivador (máximo 2 párrafos).`;
 
         try {
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${storedKey}`, {
@@ -168,22 +225,16 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
-            
             const data = await response.json();
-            
             if(data.error) throw new Error(data.error.message);
             
-            const aiText = data.candidates[0].content.parts[0].text;
-            document.getElementById('ia-response').innerHTML = aiText.replace(/\n/g, '<br>');
-            loader.style.display = 'none';
-            feedbackArea.style.display = 'block';
+            document.getElementById('ia-response').innerHTML = data.candidates[0].content.parts[0].text.replace(/\n/g, '<br>');
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('feedback-area').style.display = 'block';
             
         } catch (error) {
-            loader.style.display = 'none';
-            alert("Error al conectar con la IA. Verifica tu API Key. Detalle: " + error);
-            localStorage.removeItem('gemini_api_key');
-            setupCard.style.display = 'block';
-            practiceCard.style.display = 'none';
+            document.getElementById('loader').style.display = 'none';
+            alert("Error con la IA: " + error);
         }
     }
 </script>
